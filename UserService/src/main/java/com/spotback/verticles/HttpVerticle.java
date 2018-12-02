@@ -1,6 +1,7 @@
 package com.spotback.verticles;
 
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -13,6 +14,11 @@ public class HttpVerticle extends AbstractVerticle {
 	private static Logger LOGGER = LoggerFactory.getLogger(HttpVerticle.class);
 
 	public void start(Future<Void> startFuture) throws Exception {
+		DeploymentOptions worker = new DeploymentOptions().setWorker(true);
+		vertx.deployVerticle(new CreateAccountVerticle(), worker);
+		vertx.deployVerticle(new ReadAccountVerticle(), worker);
+		vertx.deployVerticle(new UpdateAccountVerticle(), worker);
+		vertx.deployVerticle(new DeleteAccountVerticle(), worker);
 		Future<Void> steps = startHttpServer();
 		steps.setHandler(ar -> {
 			if (ar.succeeded()) {
@@ -25,10 +31,11 @@ public class HttpVerticle extends AbstractVerticle {
 	public Future<Void> startHttpServer() {
 		Future<Void> future = Future.future();
 		Router router = Router.router(vertx);
-		router.get("/endpoint1").handler(this::endpoint1);
-		router.post("/endpoint2").handler(this::endpoint2);
+		router.post("/createAccount").handler(this::createAccount);
+		router.post("/readAccount").handler(this::readAccount);
+		router.post("/updateAccount").handler(this::updateAccount);
+		router.post("/deleteAccount").handler(this::deleteAccount);
 		HttpServer server = vertx.createHttpServer();
-
 		server.requestHandler(req -> {
 			LOGGER.info("INCOMING REQUEST AT: " + req.absoluteURI());
 			router.accept(req);
@@ -44,12 +51,44 @@ public class HttpVerticle extends AbstractVerticle {
 		return future;
 	}
 
-	public void endpoint1(RoutingContext context) {
-
+	private void createAccount(RoutingContext context) {
+		vertx.eventBus().send("create.Account", context.getBodyAsJson(), resp -> {
+			if(resp.succeeded()) {
+				context.response().end(resp.result().body().toString());
+			} else {
+				context.response().end("Account creation failed.");
+			}
+		});
 	}
 
-	public void endpoint2(RoutingContext context) {
+	private void readAccount(RoutingContext context) {
+		vertx.eventBus().send("read.Account", context.getBodyAsJson(), resp -> {
+			if(resp.succeeded()) {
+				context.response().end(resp.result().body().toString());
+			} else {
+				context.response().end("Failed to retrieve account details, please try again later");
+			}
+		});
+	}
 
+	private void updateAccount(RoutingContext context) {
+		vertx.eventBus().send("update.Account", context.getBodyAsJson(), resp -> {
+			if(resp.succeeded()) {
+				context.response().end(resp.result().body().toString());
+			} else {
+				context.response().end("Account update failed.");
+			}
+		});
+	}
+
+	private void deleteAccount(RoutingContext context) {
+		vertx.eventBus().send("delete.Account", context.getBodyAsJson(), resp -> {
+			if(resp.succeeded()) {
+				context.response().end(resp.result().body().toString());
+			} else {
+				context.response().end("Account deletion failed.");
+			}
+		});
 	}
 
 	public static void main(String[] args) {
