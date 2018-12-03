@@ -11,7 +11,9 @@ import io.vertx.core.logging.LoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateAccountVerticle extends AbstractVerticle {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateAccountVerticle.class);
+
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("create.Account", this::createAccount);
@@ -26,14 +28,15 @@ public class CreateAccountVerticle extends AbstractVerticle {
 
 
     public boolean createAccount(Message<JsonObject> message) {
+        LOGGER.info("REQUEST RECEIVED IN CREATE ACCOUNT VERTICLE.");
         AtomicBoolean persisted = new AtomicBoolean(false);
-        if(message.body().isEmpty() && message.headers().isEmpty()) {
+        if(message.body().isEmpty()) {
             message.reply("Not authorized to make this request.");
             persisted.set(false);
             return persisted.get();
         } else {
             /**TODO
-             * Implement extracting of the json and pushing to db
+             * Implement extracting of the json to pojo and validating
              */
             vertx.executeBlocking(future -> {
                 try {

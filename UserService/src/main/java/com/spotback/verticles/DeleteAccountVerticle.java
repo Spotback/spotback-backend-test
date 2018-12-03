@@ -14,6 +14,8 @@ public class DeleteAccountVerticle extends AbstractVerticle {
     }
 
     private void deleteAccount(Message<JsonObject> message) {
+
+        message.reply("Coming from the delete account verticle.");
     }
 
 }

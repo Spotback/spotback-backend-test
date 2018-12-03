@@ -14,5 +14,6 @@ public class UpdateAccountVerticle extends AbstractVerticle {
     }
 
     private void updateAccount(Message<JsonObject> message) {
+        message.reply("coming from the update account verticle.");
     }
 }

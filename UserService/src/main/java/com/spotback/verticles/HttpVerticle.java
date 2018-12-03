@@ -5,6 +5,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -52,12 +53,15 @@ public class HttpVerticle extends AbstractVerticle {
 	}
 
 	private void createAccount(RoutingContext context) {
-		vertx.eventBus().send("create.Account", context.getBodyAsJson(), resp -> {
-			if(resp.succeeded()) {
-				context.response().end(resp.result().body().toString());
-			} else {
-				context.response().end("Account creation failed.");
-			}
+		context.request().bodyHandler(bodyHandler -> {
+			final JsonObject body = bodyHandler.toJsonObject();
+			vertx.eventBus().send("create.Account", body, resp -> {
+				if(resp.succeeded()) {
+					context.response().end(resp.result().body().toString());
+				} else {
+					context.response().end("Account creation failed.");
+				}
+			});
 		});
 	}
 

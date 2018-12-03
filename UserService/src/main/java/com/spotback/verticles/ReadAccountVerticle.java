@@ -14,5 +14,6 @@ public class ReadAccountVerticle extends AbstractVerticle {
     }
 
     private void readAccount(Message<JsonObject> message) {
+        message.reply("Coming from the read account verticle.");
     }
 }
