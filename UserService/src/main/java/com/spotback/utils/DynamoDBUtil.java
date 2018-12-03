@@ -9,14 +9,21 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 import java.util.HashMap;
 
 public class DynamoDBUtil {
-	
-	static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider())
-    .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-west-2.amazonaws.com", "us-west-2"))
-    .build();
+	private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBUtil.class);
+	private static AmazonDynamoDB client;
+
+	public static AmazonDynamoDB getClient() {
+		LOGGER.info("Attempting to make connection to DynamoDB.");
+		return client = AmazonDynamoDBClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider())
+				.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-west-2.amazonaws.com", "us-west-2"))
+				.build();
+	}
 	public static void main(String[] args) {
 		 DynamoDB dynamoDB = new DynamoDB(client);
 
