@@ -15,7 +15,7 @@ public class ReadAccountVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadAccountVerticle.class);
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("read.Account", this::readAccount);
+        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("/readAccount", this::readAccount);
         consumer.completionHandler(ar -> {
             if (ar.succeeded()) {
                 startFuture.complete();

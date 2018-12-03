@@ -15,7 +15,7 @@ public class DeleteAccountVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteAccountVerticle.class);
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("delete.Account", this::deleteAccount);
+        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("/deleteAccount", this::deleteAccount);
         consumer.completionHandler(ar -> {
             if (ar.succeeded()) {
                 startFuture.complete();

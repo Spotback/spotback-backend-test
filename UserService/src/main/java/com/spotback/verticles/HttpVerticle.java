@@ -1,11 +1,8 @@
 package com.spotback.verticles;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Future;
-import io.vertx.core.Vertx;
+import io.vertx.core.*;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.HttpServer;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -29,13 +26,11 @@ public class HttpVerticle extends AbstractVerticle {
 			}
 		});
 	}
+
 	public Future<Void> startHttpServer() {
 		Future<Void> future = Future.future();
 		Router router = Router.router(vertx);
-		router.post("/createAccount").handler(this::createAccount);
-		router.post("/readAccount").handler(this::readAccount);
-		router.post("/updateAccount").handler(this::updateAccount);
-		router.post("/deleteAccount").handler(this::deleteAccount);
+		router.post().handler(this::requestHandler);
 		HttpServer server = vertx.createHttpServer();
 		server.requestHandler(req -> {
 			LOGGER.info("INCOMING REQUEST AT: " + req.absoluteURI());
@@ -52,53 +47,15 @@ public class HttpVerticle extends AbstractVerticle {
 		return future;
 	}
 
-	private void createAccount(RoutingContext context) {
+	private void requestHandler(RoutingContext context) {
 		context.request().bodyHandler(bodyHandler -> {
-			final JsonObject body = bodyHandler.toJsonObject();
-			vertx.eventBus().send("create.Account", body, resp -> {
+			MultiMap headers = context.request().headers();
+			DeliveryOptions options = new DeliveryOptions().setHeaders(headers);
+			vertx.eventBus().send(context.request().uri(), bodyHandler.toJsonObject(), options, resp -> {
 				if(resp.succeeded()) {
 					context.response().end(resp.result().body().toString());
 				} else {
-					context.response().end("Account creation failed.");
-				}
-			});
-		});
-	}
-
-	private void readAccount(RoutingContext context) {
-		context.request().bodyHandler(bodyHandler -> {
-			final JsonObject body = bodyHandler.toJsonObject();
-			vertx.eventBus().send("read.Account", body, resp -> {
-				if(resp.succeeded()) {
-					context.response().end(resp.result().body().toString());
-				} else {
-					context.response().end("Account retrieval failed.");
-				}
-			});
-		});
-	}
-
-	private void updateAccount(RoutingContext context) {
-		context.request().bodyHandler(bodyHandler -> {
-			final JsonObject body = bodyHandler.toJsonObject();
-			vertx.eventBus().send("update.Account", body, resp -> {
-				if(resp.succeeded()) {
-					context.response().end(resp.result().body().toString());
-				} else {
-					context.response().end("Account update failed.");
-				}
-			});
-		});
-	}
-
-	private void deleteAccount(RoutingContext context) {
-		context.request().bodyHandler(bodyHandler -> {
-			final JsonObject body = bodyHandler.toJsonObject();
-			vertx.eventBus().send("delete.Account", body, resp -> {
-				if(resp.succeeded()) {
-					context.response().end(resp.result().body().toString());
-				} else {
-					context.response().end("Account deletion failed.");
+					context.response().end("Request failed");
 				}
 			});
 		});

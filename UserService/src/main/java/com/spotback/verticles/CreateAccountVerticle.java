@@ -16,7 +16,7 @@ public class CreateAccountVerticle extends AbstractVerticle {
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("create.Account", this::createAccount);
+        MessageConsumer<JsonObject> consumer = vertx.eventBus().consumer("/createAccount", this::createAccount);
         consumer.completionHandler(ar -> {
                     if (ar.succeeded()) {
                         startFuture.complete();
