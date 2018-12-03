@@ -20,10 +20,15 @@ public class DynamoDBUtil {
 
 	public static AmazonDynamoDB getClient() {
 		LOGGER.info("Attempting to make connection to DynamoDB.");
-		return client = AmazonDynamoDBClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider())
-				.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-west-2.amazonaws.com", "us-west-2"))
-				.build();
+		if(client == null) {
+			return client = AmazonDynamoDBClientBuilder.standard().withCredentials(new EnvironmentVariableCredentialsProvider())
+					.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("https://dynamodb.us-west-2.amazonaws.com", "us-west-2"))
+					.build();
+		} else {
+			return client;
+		}
 	}
+
 	public static void main(String[] args) {
 		 DynamoDB dynamoDB = new DynamoDB(client);
 
