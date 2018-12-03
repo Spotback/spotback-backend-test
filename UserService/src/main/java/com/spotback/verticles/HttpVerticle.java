@@ -66,32 +66,41 @@ public class HttpVerticle extends AbstractVerticle {
 	}
 
 	private void readAccount(RoutingContext context) {
-		vertx.eventBus().send("read.Account", context.getBodyAsJson(), resp -> {
-			if(resp.succeeded()) {
-				context.response().end(resp.result().body().toString());
-			} else {
-				context.response().end("Failed to retrieve account details, please try again later");
-			}
+		context.request().bodyHandler(bodyHandler -> {
+			final JsonObject body = bodyHandler.toJsonObject();
+			vertx.eventBus().send("read.Account", body, resp -> {
+				if(resp.succeeded()) {
+					context.response().end(resp.result().body().toString());
+				} else {
+					context.response().end("Account retrieval failed.");
+				}
+			});
 		});
 	}
 
 	private void updateAccount(RoutingContext context) {
-		vertx.eventBus().send("update.Account", context.getBodyAsJson(), resp -> {
-			if(resp.succeeded()) {
-				context.response().end(resp.result().body().toString());
-			} else {
-				context.response().end("Account update failed.");
-			}
+		context.request().bodyHandler(bodyHandler -> {
+			final JsonObject body = bodyHandler.toJsonObject();
+			vertx.eventBus().send("update.Account", body, resp -> {
+				if(resp.succeeded()) {
+					context.response().end(resp.result().body().toString());
+				} else {
+					context.response().end("Account update failed.");
+				}
+			});
 		});
 	}
 
 	private void deleteAccount(RoutingContext context) {
-		vertx.eventBus().send("delete.Account", context.getBodyAsJson(), resp -> {
-			if(resp.succeeded()) {
-				context.response().end(resp.result().body().toString());
-			} else {
-				context.response().end("Account deletion failed.");
-			}
+		context.request().bodyHandler(bodyHandler -> {
+			final JsonObject body = bodyHandler.toJsonObject();
+			vertx.eventBus().send("delete.Account", body, resp -> {
+				if(resp.succeeded()) {
+					context.response().end(resp.result().body().toString());
+				} else {
+					context.response().end("Account deletion failed.");
+				}
+			});
 		});
 	}
 
