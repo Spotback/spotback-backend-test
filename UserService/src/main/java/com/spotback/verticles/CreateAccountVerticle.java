@@ -8,10 +8,7 @@ import io.vertx.core.eventbus.MessageConsumer;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.ext.mail.MailClient;
-import io.vertx.ext.mail.MailConfig;
-import io.vertx.ext.mail.MailMessage;
-import io.vertx.ext.mail.StartTLSOptions;
+import io.vertx.ext.mail.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -21,6 +18,7 @@ public class CreateAccountVerticle extends AbstractVerticle {
     private static MailClient mailClient;
     private static MailMessage eMessage = new MailMessage();
     private static MailConfig config = new MailConfig();
+    private static Vertx vert;
 
     @Override
     public void start(Future<Void> startFuture) throws Exception {
@@ -32,12 +30,13 @@ public class CreateAccountVerticle extends AbstractVerticle {
                 startFuture.fail(ar.cause());
             }
         });
+        vert = vertx;
     }
 
     public boolean createAccount(Message<JsonObject> message) {
         LOGGER.info("REQUEST RECEIVED IN CREATE ACCOUNT VERTICLE.");
         AtomicBoolean persisted = new AtomicBoolean(false);
-        if (message.body().isEmpty()) {
+        if (/**message.body().isEmpty()*/false) {
             message.reply("Not authorized to make this request.");
             persisted.set(false);
             return persisted.get();
@@ -70,21 +69,26 @@ public class CreateAccountVerticle extends AbstractVerticle {
                     persisted.set(false);
                 }
             });
+//            message.reply("success");
             return persisted.get();
         }
     }
 
     private static MailClient getEmailClient() {
-        config.setHostname("mail.example.com");
-        config.setPort(587);
+        config.setHostname("smtp.gmail.com");
+        config.setPort(465);
+        config.setSsl(true);
         config.setStarttls(StartTLSOptions.REQUIRED);
-        config.setUsername("spotbackteam@gmail.com");
-        config.setPassword("Spotbackteam!");
-        mailClient = MailClient.createNonShared(Vertx.vertx(), config);
-        eMessage.setFrom("spotbackteam@gmail.com (Spotback Team)");
-        eMessage.setTo("dylancorbus@outlook.com");
-        eMessage.setSubject("Test email");
-        eMessage.setText("this is the plain message text");
+        config.setLogin(LoginOption.REQUIRED);
+        config.setUsername("dylancorbus@gmail.com");
+        config.setPassword("Dylancorbus2");
+        config.setAuthMethods("PLAIN");
+        config.setTrustAll(true);
+        mailClient = MailClient.createShared(vert, config);
+        eMessage.setFrom("dylancorbus@gmail.com");
+        eMessage.setTo("joeycaruana94@gmail.com");
+        eMessage.setSubject("this is the plain message text coming from a vertx java application");
+        eMessage.setText("this is the plain message text coming from a vertx java application");
         eMessage.setHtml("this is html text <a href=\"http://vertx.io\">vertx.io</a>");
         return mailClient;
     }

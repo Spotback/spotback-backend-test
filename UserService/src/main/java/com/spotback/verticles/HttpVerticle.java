@@ -14,9 +14,9 @@ public class HttpVerticle extends AbstractVerticle {
     public void start(Future<Void> startFuture) throws Exception {
         DeploymentOptions worker = new DeploymentOptions().setWorker(true);
         vertx.deployVerticle(new CreateAccountVerticle(), worker);
-        vertx.deployVerticle(new ReadAccountVerticle(), worker);
-        vertx.deployVerticle(new UpdateAccountVerticle(), worker);
-        vertx.deployVerticle(new DeleteAccountVerticle(), worker);
+//        vertx.deployVerticle(new ReadAccountVerticle(), worker);
+//        vertx.deployVerticle(new UpdateAccountVerticle(), worker);
+//        vertx.deployVerticle(new DeleteAccountVerticle(), worker);
         Future<Void> steps = startHttpServer();
         steps.setHandler(ar -> {
             if (ar.succeeded()) {
@@ -60,9 +60,5 @@ public class HttpVerticle extends AbstractVerticle {
             });
         });
     }
-
-    public static void main(String[] args) {
-        Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new HttpVerticle());
-    }
+    
 }
