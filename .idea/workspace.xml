@@ -211,8 +211,8 @@
   <component name="RunManager" selected="Application.HttpVerticle">
     <configuration name="DynamoDBUtil" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <envs>
-        <env name="AWS_SECRET_ACCESS_KEY" value="+Rka22YzXaMN5//vcucRs8Dox7cZWEVEObVPx/8m" />
-        <env name="AWS_ACCESS_KEY" value="AKIAI7E7SYHFFQ44IFEA" />
+        <env name="AWS_SECRET_ACCESS_KEY" value="xxx" />
+        <env name="AWS_ACCESS_KEY" value="xxx" />
       </envs>
       <option name="MAIN_CLASS_NAME" value="com.spotback.utils.DynamoDBUtil" />
       <module name="UserService" />
