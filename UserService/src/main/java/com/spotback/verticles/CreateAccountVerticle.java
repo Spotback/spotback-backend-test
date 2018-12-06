@@ -80,13 +80,13 @@ public class CreateAccountVerticle extends AbstractVerticle {
         config.setSsl(true);
         config.setStarttls(StartTLSOptions.REQUIRED);
         config.setLogin(LoginOption.REQUIRED);
-        config.setUsername("dylancorbus@gmail.com");
-        config.setPassword("Dylancorbus2");
+        config.setUsername("email@email.com");
+        config.setPassword("password");
         config.setAuthMethods("PLAIN");
         config.setTrustAll(true);
         mailClient = MailClient.createShared(vert, config);
-        eMessage.setFrom("dylancorbus@gmail.com");
-        eMessage.setTo("joeycaruana94@gmail.com");
+        eMessage.setFrom("email@email.com");
+        eMessage.setTo("la;skdfja;ldskf");
         eMessage.setSubject("this is the plain message text coming from a vertx java application");
         eMessage.setText("this is the plain message text coming from a vertx java application");
         eMessage.setHtml("this is html text <a href=\"http://vertx.io\">vertx.io</a>");
